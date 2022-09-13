@@ -3,3 +3,6 @@ bin
 .d
 Dockerfile
 .vscode
+response.json
+expected.json
+__pycache__
