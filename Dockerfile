@@ -1,0 +1,11 @@
+FROM archlinux
+RUN pacman -Sy; \
+  pacman -S --noconfirm libpqxx;
+COPY bin/Main /app/Main
+ARG DBNAME
+ENV DB=$DBNAME
+ARG DBUSER
+ENV USER=$DBUSER
+ARG DBPASSWORD
+ENV PASSWORD=$DBPASSWORD
+ENTRYPOINT "/app/Main" "0.0.0.0" $DB $USER $PASSWORD

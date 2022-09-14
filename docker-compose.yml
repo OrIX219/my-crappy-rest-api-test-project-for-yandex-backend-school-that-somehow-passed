@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  rest:
+    build: 
+      context: .
+      args:
+        DBNAME: "rest"
+        DBUSER: "orix"
+        DBPASSWORD: "228"
+    ports: 
+      - "80:80"
+    network_mode: "host"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: "rest"
+      POSTGRES_USER: "orix"
+      POSTGRES_PASSWORD: "228"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    network_mode: "host"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orix -d rest"]
+      interval: 5s
+      timeout: 5s
+      retries: 3

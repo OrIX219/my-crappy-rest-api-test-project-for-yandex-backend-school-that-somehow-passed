@@ -11,7 +11,8 @@ class DbManager {
   public:
   DbManager(const std::string& db_name,
     const std::string& user = "root", 
-    const std::string& addr = "127.0.0.1",
+    const std::string& password = "",
+    const std::string& addr = "0.0.0.0",
     const std::string& port = "5432");
   
   pqxx::work Work();

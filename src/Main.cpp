@@ -215,11 +215,12 @@ int main(int argc, char* argv[]) {
   try {
     if (argc != 5) {
       std::cerr << "Usage:\n";
-      std::cerr << "\tMain <address> <port> <db name> <db user>\n";
+      std::cerr << "\tMain <db host> <db name> <db user> <db password>\n";
       return 1;
     }
 
-    DbManager dbm(argv[3], argv[4]);
+    DbManager dbm(argv[2], argv[3], argv[4], argv[1]);
+    std::cerr << "DB Connected\n";
 
     db::CreateItemTable(dbm);
     db::CreateHistoryTable(dbm);
@@ -241,7 +242,8 @@ int main(int argc, char* argv[]) {
       std::bind(HistoryHandler, std::ref(dbm), 
       std::placeholders::_1, std::placeholders::_2));
       
-    Server s(argv[1], argv[2], std::move(request_handler));
+    Server s("0.0.0.0", "80", std::move(request_handler));
+    std::cerr << "Server is up\n";
 
     s.Run();
   } catch (std::exception& e) {
