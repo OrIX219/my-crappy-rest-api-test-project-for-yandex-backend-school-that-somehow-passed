@@ -84,8 +84,21 @@ void ImportsHandler(const Request& req, Reply& rep) {
       item["size"] = 0;
       item["url"] = json::value_t::null;
     }
-    int size_delta = db::InsertItem(dbm, item);
-    std::string parent = db::GetParent(dbm, item["id"].get<std::string>());
+    const std::string& id = item["id"].get<std::string>();
+    int size_delta;
+    std::string old_parent;
+    if (!db::ItemExists(dbm, id)) {
+      size_delta = db::InsertItem(dbm, item);
+    } else {
+      old_parent = db::GetParent(dbm, id);
+      size_delta = db::UpdateItem(dbm, item);
+    }
+    std::string parent = db::GetParent(dbm, id);
+    if (old_parent != parent) {
+      size_delta = item["size"].get<int>();
+      if (!old_parent.empty())
+        ChangeSize(old_parent, -item["size"].get<int>(), date);
+    }
     if (!parent.empty())
       ChangeSize(parent, size_delta, date);
   }
@@ -182,6 +195,7 @@ void HistoryHandler(const Request& req, Reply& rep) {
   }
   if (req.params.count("dateStart") == 0
     || !utils::IsDateValid(req.params.at("dateStart"))) {
+    std::cerr << req.params.at("dateStart");
     rep = Reply::StockReply(Reply::bad_request);
     return;
   }

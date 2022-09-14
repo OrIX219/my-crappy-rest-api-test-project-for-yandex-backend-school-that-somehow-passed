@@ -139,8 +139,11 @@ EXPECTED_TREE = [
 def test_updates():
     for index, batch in enumerate(IMPORT_BATCHES):
         print(f"Importing batch {index}")
-        status, _ = request("/imports", method="POST", data=batch)
-        status, response = request(f"/updates?date={UPDATES_DATE}", json_response=True)
+        request("/imports", method="POST", data=batch)
+        params = urllib.parse.urlencode({
+            "date": UPDATES_DATE
+        })
+        status, response = request(f"/updates?{params}", json_response=True)
         assert status == 200, f"Expected HTTP status code 200, got {status}"
         deep_sort_children(response)
         expected = EXPECTED_TREE[index]

@@ -130,19 +130,15 @@ static int UpdateItem(DbManager& dbm, const json& item) {
 }
 
 static int InsertItem(DbManager& dbm, const json& item) {
-  if (!ItemExists(dbm, item["id"].get<std::string>())) {
-    pqxx::work work = dbm.Work();
-    work.exec0(MakeInsertString("items",
-      {"id","type","size","date","parentId","url"}, 
-      item));
+  pqxx::work work = dbm.Work();
+  work.exec0(MakeInsertString("items",
+    {"id","type","size","date","parentId","url"}, 
+    item));
 
-    work.commit();
-    InsertIntoHistory(dbm, item);
+  work.commit();
+  InsertIntoHistory(dbm, item);
 
-    return item["size"].get<int>();
-  } else {
-    return UpdateItem(dbm, item);
-  }
+  return item["size"].get<int>();
 }
 
 static std::string GetType(DbManager& dbm, const std::string& id) {

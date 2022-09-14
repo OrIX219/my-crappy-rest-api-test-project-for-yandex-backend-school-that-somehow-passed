@@ -38,10 +38,10 @@ std::unordered_map<std::string, std::string>
 }
 
 bool RequestParser::ParseBody(Request& req, std::string_view str) {
-  size_t bodyStart = str.find_first_of("{");
-  if (bodyStart == str.npos)
+  size_t body_start = str.find_first_of("{");
+  if (body_start == str.npos)
     return false;
-  str = str.substr(bodyStart);
+  str = str.substr(body_start, str.find_last_of("}") + 1 - body_start);
   req.body = json::parse(str, nullptr, false);
   return !req.body.is_discarded();
 }
