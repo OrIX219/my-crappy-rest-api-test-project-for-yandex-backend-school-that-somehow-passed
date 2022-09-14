@@ -9,10 +9,6 @@ DbManager::DbManager(const std::string& db_name,
     + " hostaddr = " + addr
     + " port = " + port) {}
 
-DbManager::~DbManager() {
-  connection_.close();
-}
-
 pqxx::work DbManager::Work() {
   return pqxx::work(connection_);
 }

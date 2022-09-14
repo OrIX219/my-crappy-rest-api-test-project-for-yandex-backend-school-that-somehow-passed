@@ -13,7 +13,6 @@ class DbManager {
     const std::string& user = "root", 
     const std::string& addr = "127.0.0.1",
     const std::string& port = "5432");
-  ~DbManager();
   
   pqxx::work Work();
   pqxx::nontransaction NonTransaction();
