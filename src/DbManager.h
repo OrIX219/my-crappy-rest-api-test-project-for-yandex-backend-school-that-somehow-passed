@@ -3,7 +3,12 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <future>
 #include <json/json.hpp>
+#include "Utils.h"
+#include "Paginator.h"
+
+#define NTHREADS 4
 
 using nlohmann::json;
 
@@ -194,36 +199,39 @@ static int DeleteItem(DbManager& dbm, const std::string& id) {
 }
 
 static json GetItem(DbManager& dbm, const std::string& id) {
-  json item;
   pqxx::nontransaction nt = dbm.NonTransaction();
   pqxx::row row = nt.exec1("SELECT * FROM items WHERE id = '" + id + "';");
-  item["id"] = id;
-  item["type"] = row["type"].as<std::string>();
-  item["size"] = row["size"].as<int>();
-  item["date"] = row["date"].as<std::string>();
-  if (row["parentId"].is_null())
-    item["parentId"] = json::value_t::null;
-  else
-    item["parentId"] = row["parentId"].as<std::string>();
-  if (row["url"].is_null())
-    item["url"] = json::value_t::null;
-  else
-    item["url"] = row["url"].as<std::string>(); 
+  json item = utils::MakeItemFromRow(row);
 
   return item;
 }
 
-static std::vector<std::string> 
-  GetUpdatedBetween(DbManager& dbm, 
+static json GetUpdatedBetween(DbManager& dbm, 
   const std::string& date1, const std::string& date2) {
-  std::vector<std::string> items;
+  json items;
   pqxx::nontransaction nt = dbm.NonTransaction();
   const std::string format = "YYYY-MM-DDXHH24:MI:SSX";
-  pqxx::result res = nt.exec("SELECT id FROM items WHERE type = 'FILE' "
+  pqxx::result res = nt.exec("SELECT * FROM items WHERE type = 'FILE' "
     "AND date::timestamp >= to_timestamp('" + date1 + "', '" + format + "') "
-    "AND date::timestamp <= to_timestamp('" + date2 + "', '" + format + "');");
-  for (const auto& row : res)
-    items.push_back(row[0].as<std::string>());
+    "AND date::timestamp <= to_timestamp('" + date2 + "', '" + format + "') "
+    "ORDER BY date::timestamp, id;");
+  items["items"] = json::value_t::array;
+  items["items"].get_ptr<json::array_t*>()->reserve(res.size());
+  std::vector<std::future<void>> futures;
+  size_t i = 0;
+  for (auto page : Paginate(res, NTHREADS)) {
+    futures.push_back(std::async([&, page](size_t i) {
+      for (const pqxx::row& row : page) {
+        json item = utils::MakeItemFromRow(row);
+        items["items"][i++] = std::move(item);
+      }
+    }, i));
+    i += NTHREADS;
+  }
+
+  for (auto& f : futures)
+    f.get();
+
   return items;
 }
 
@@ -235,24 +243,24 @@ static json GetHistoryBetween(DbManager& dbm, const std::string& id,
     pqxx::result res = nt.exec("SELECT * FROM history WHERE "
       "id = '" + id + "' "
       "AND date::timestamp >= to_timestamp('" + date1 + "', '" + format + "') "
-      "AND date::timestamp < to_timestamp('" + date2 + "', '" + format + "');");
+      "AND date::timestamp < to_timestamp('" + date2 + "', '" + format + "') "
+      "ORDER BY date::timestamp, id;");
     items["items"] = json::value_t::array;
-    for (const auto& row : res) {
-      json item;
-      item["id"] = id;
-      item["type"] = row["type"].as<std::string>();
-      item["size"] = row["size"].as<int>();
-      item["date"] = row["date"].as<std::string>();
-      if (row["parentId"].is_null())
-        item["parentId"] = json::value_t::null;
-      else
-        item["parentId"] = row["parentId"].as<std::string>();
-      if (row["url"].is_null())
-        item["url"] = json::value_t::null;
-      else
-        item["url"] = row["url"].as<std::string>();
-      items["items"].push_back(std::move(item));
+    items["items"].get_ptr<json::array_t*>()->reserve(res.size());
+    std::vector<std::future<void>> futures;
+    size_t i = 0;
+    for (auto page : Paginate(res, NTHREADS)) {
+      futures.push_back(std::async([&, page](size_t i) {
+        for (const pqxx::row& row : page) {
+          json item = utils::MakeItemFromRow(row);
+          items["items"][i++] = std::move(item);
+        }
+      }, i));
+      i += NTHREADS;
     }
+
+    for (auto& f : futures)
+      f.get();
 
     return items;
   }

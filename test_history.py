@@ -263,17 +263,14 @@ def test_history():
         status, res_root = request(f"/node/root/history?{params}", json_response=True)
         assert status == 200, f"Expected HTTP status code 200, got {status}"
         expected_root = EXPECTED_ROOT[index]
-        deep_sort_children(res_root)
-        deep_sort_children(expected_root)
         if res_root != expected_root:
+            print(res_root)
             print_diff(expected_root, res_root)
             print("ROOT: Response tree doesn't match expected tree.")
             sys.exit(1)
         status, res_e1 = request(f"/node/e1/history?{params}", json_response=True)
         assert status == 200, f"Expected HTTP status code 200, got {status}"
         expected_e1 = EXPECTED_E1[index]
-        deep_sort_children(res_e1)
-        deep_sort_children(expected_e1)
         if res_e1 != expected_e1:
             print_diff(expected_e1, res_e1)
             print("E1: Response tree doesn't match expected tree.")
@@ -281,8 +278,6 @@ def test_history():
         status, res_e2 = request(f"/node/e2/history?{params}", json_response=True)
         assert status == 200, f"Expected HTTP status code 200, got {status}"
         expected_e2 = EXPECTED_E2[index]
-        deep_sort_children(res_e2)
-        deep_sort_children(expected_e2)
         if res_e2 != expected_e2:
             print_diff(expected_e2, res_e2)
             print("E2: Response tree doesn't match expected tree.")

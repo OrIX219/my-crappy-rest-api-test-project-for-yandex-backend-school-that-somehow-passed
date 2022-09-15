@@ -145,9 +145,7 @@ def test_updates():
         })
         status, response = request(f"/updates?{params}", json_response=True)
         assert status == 200, f"Expected HTTP status code 200, got {status}"
-        deep_sort_children(response)
         expected = EXPECTED_TREE[index]
-        deep_sort_children(expected)
         if response != expected:
             print_diff(expected, response)
             print("Response tree doesn't match expected tree.")

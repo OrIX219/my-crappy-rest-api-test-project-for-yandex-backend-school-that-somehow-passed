@@ -1,6 +1,7 @@
 #include "Server.h"
 #include <signal.h>
 #include <utility>
+#include <iostream>
 
 Server::Server(const std::string& address, 
   const std::string& port, RequestHandler request_handler)
@@ -42,6 +43,8 @@ void Server::Accept() {
       if (!ec) {
         connection_manager_.Start(std::make_shared<Connection>(
           std::move(socket_), connection_manager_, request_handler_));
+      } else {
+        std::cerr << ec.message() << std::endl;
       }
 
       Accept();

@@ -3,7 +3,11 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
-#include "date/date.h"
+#include <date/date.h>
+#include <json/json.hpp>
+#include <pqxx/pqxx>
+
+using nlohmann::json;
 
 namespace utils {
 
@@ -50,6 +54,24 @@ static std::string UrlDecode(const std::string& in) {
     }
   }
   return out;
+}
+
+static json MakeItemFromRow(const pqxx::row& row) {
+  json item;
+  item["id"] = row["id"].as<std::string>();
+  item["type"] = row["type"].as<std::string>();
+  item["size"] = row["size"].as<int>();
+  item["date"] = row["date"].as<std::string>();
+  if (row["parentId"].is_null())
+    item["parentId"] = json::value_t::null;
+  else
+    item["parentId"] = row["parentId"].as<std::string>();
+  if (row["url"].is_null())
+    item["url"] = json::value_t::null;
+  else
+    item["url"] = row["url"].as<std::string>(); 
+
+  return item;
 }
 
 }

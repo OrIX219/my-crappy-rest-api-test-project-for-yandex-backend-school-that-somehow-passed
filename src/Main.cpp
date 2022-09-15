@@ -172,13 +172,8 @@ void UpdatesHandler(DbManager& dbm, const Request& req, Reply& rep) {
     return;
   } 
 
-  json res;
-  res["items"] = json::value_t::array;
   std::string date24ago = utils::Date24HAgo(req.params.at("date"));
-  for (const std::string& item : 
-    db::GetUpdatedBetween(dbm, date24ago, req.params.at("date"))) {
-    res["items"].push_back(db::GetItem(dbm, item));
-  }
+  json res = db::GetUpdatedBetween(dbm, date24ago, req.params.at("date"));
 
   rep.content = res.dump(2, ' ');
   rep.status = Reply::ok;

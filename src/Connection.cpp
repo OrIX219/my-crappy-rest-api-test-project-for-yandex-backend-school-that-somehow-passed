@@ -1,6 +1,7 @@
 #include "Connection.h"
 #include <utility>
 #include <vector>
+#include <iostream>
 #include "ConnectionManager.h"
 #include "RequestHandler.h"
 
@@ -46,6 +47,8 @@ void Connection::Read() {
         }
       } else if (ec != asio::error::operation_aborted) {
         connection_manager_.Stop(shared_from_this());
+      } else {
+        std::cerr << ec.message() << std::endl;
       }
     });
 }
