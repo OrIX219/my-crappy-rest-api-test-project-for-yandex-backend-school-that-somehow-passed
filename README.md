@@ -21,7 +21,7 @@ Or it will crash with some link errors or something idk.
 Running
 -------
 ### With Docker ###
-If you have **docker** with **compose** plugin, after building you can also:
+If you have **docker** with **compose** plugin, after building you can:
 ```
 sudo docker compose up
 ```
