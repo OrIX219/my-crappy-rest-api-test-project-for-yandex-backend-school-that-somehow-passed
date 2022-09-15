@@ -8,7 +8,7 @@ INCLUDE = -Iinclude -Iinclude/asio
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 DEP = $(SRC:$(SRC_DIR)/%.cpp=$(DEP_DIR)/%.d)
-CXXFLAGS = -Wall -std=c++17
+CXXFLAGS = -std=c++17 -O2
 LDFLAGS = -lpqxx -lpq
 DEPFLAGS = -MMD -MF $(DEP_DIR)/$*.Td
 

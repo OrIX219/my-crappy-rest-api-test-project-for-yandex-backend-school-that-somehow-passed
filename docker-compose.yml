@@ -30,4 +30,4 @@ services:
       test: ["CMD-SHELL", "pg_isready -U orix -d rest"]
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 5
