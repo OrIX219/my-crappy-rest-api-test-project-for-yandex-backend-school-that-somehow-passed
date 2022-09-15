@@ -37,7 +37,7 @@ If you don' have **docker** then you need:
 4. Make new db
 5. Run binary:
 ```
-sudo bin/Main *127.0.0.1* *<<your db name>>* *<<your user>>* *<<your password>>*
+sudo bin/Main 127.0.0.1 <your db name> <your user> <your password>
 ```
 What these args mean is pretty obvious except for first one:
 it is ip addr where db is running.
