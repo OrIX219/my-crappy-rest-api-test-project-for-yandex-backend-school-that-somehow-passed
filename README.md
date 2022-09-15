@@ -18,15 +18,15 @@ And then the binary will magically appear in */bin* folder.
 Or it will crash with some link errors or something idk.   
 (Most likely because of libpqxx(If it happens it is certainly because of it))
 
-Runinng
+Running
 -------
 ### With Docker ###
 If you have **docker** with **compose** plugin, after building you can also:
 ```
 sudo docker compose up
 ```
-But be sure that nothing else is running on **80**(api) and **5432**(db) ports.
-It will build docker image with main binary and then start it and another container with postgresql.
+But be sure that nothing else is running on **80**(api) and **5432**(db) ports.  
+It will build docker image with main binary and then start it and another container with postgresql.  
 After that you will be able to access api on *0.0.0.0* or *127.0.0.1* or *localhost*.
 
 ### Without Docker ###
