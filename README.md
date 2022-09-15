@@ -5,7 +5,7 @@ Dependencies
 * [JSON for Modern C++](https://github.com/nlohmann/json)
 * [date](https://github.com/HowardHinnant/date)
 ### Need installation ##
-* [libpqxx](https://github.com/jtv/libpqxx)
+* [libpqxx](https://github.com/jtv/libpqxx)  
 In fact, installing some libpqxx package with your package manager should be enough.
 
 Build
@@ -14,8 +14,8 @@ You just:
 ```
 make
 ```
-And then the binary will magically appear in */bin* folder.
-Or it will crash with some link errors or something idk. 
+And then the binary will magically appear in */bin* folder.  
+Or it will crash with some link errors or something idk.   
 (Most likely because of libpqxx(If it happens it is certainly because of it))
 
 Runinng
@@ -40,5 +40,5 @@ If you don' have **docker** then you need:
 sudo bin/Main 127.0.0.1 <your db name> <your user> <your password>
 ```
 What these args mean is pretty obvious except for first one:
-it is ip addr where db is running.
+it is ip addr where db is running.  
 If you want to pass *localhost*, I think for it to work you need to change *hostaddr* string in DbManager constructor in ***DbManager.cpp*** to just *host* and rebuild binary. I didn't try, idc.
