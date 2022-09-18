@@ -219,6 +219,12 @@ static json GetUpdatedBetween(DbManager& dbm,
   items["items"].get_ptr<json::array_t*>()->reserve(res.size());
   std::vector<std::future<void>> futures;
   size_t i = 0;
+  /*
+  * Here and below I should've used 
+  * items["items"].size() / NTHREADS instead of just NTHREADS
+  * Wtf, how could I make such a stupid mistake
+  * Won't change it for historical accuracy 
+  */
   for (auto page : Paginate(res, NTHREADS)) {
     futures.push_back(std::async([&, page](size_t i) {
       for (const pqxx::row& row : page) {
